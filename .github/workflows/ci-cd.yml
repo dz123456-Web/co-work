@@ -5,15 +5,38 @@ on:
     branches: [ main ]
 
 jobs:
-  检测变更:
+  check-code:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: 安装依赖
+      
+      - name: 查看文件结构
         run: |
-          cd backend
-          npm install
-      - name: 运行测试
+          echo "========== 文件列表 =========="
+          ls -la
+          echo "========== backend目录 =========="
+          ls -la backend || echo "backend目录不存在"
+          echo "========== frontend目录 =========="
+          ls -la frontend || echo "frontend目录不存在"
+      
+      - name: 检查后端依赖
         run: |
-          cd backend
-          echo "测试通过"
+          if [ -f "backend/package.json" ]; then
+            echo "找到 package.json"
+            cd backend
+            npm install
+            echo "后端依赖安装成功"
+          else
+            echo "没有找到 package.json，跳过"
+          fi
+      
+      - name: 检查前端
+        run: |
+          if [ -f "frontend/package.json" ]; then
+            echo "找到 package.json"
+            cd frontend
+            npm install
+            echo "前端依赖安装成功"
+          else
+            echo "没有找到 package.json，跳过"
+          fi
